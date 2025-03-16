@@ -16,8 +16,7 @@ public class SphinxToken extends AbstractToken {
         super(main, db, "sphinx_token", TokenType.EVENT, true, 180, Arrays.asList(
                 new PotionEffect(PotionEffectType.STRENGTH, 16 * 20, 1),
                 new PotionEffect(PotionEffectType.SPEED, 16 * 20, 1),
-                new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 16 * 20, 0),
-                new PotionEffect(PotionEffectType.HEALTH_BOOST, 16 * 20, 4)
+                new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 16 * 20, 0)
         ));
     }
 

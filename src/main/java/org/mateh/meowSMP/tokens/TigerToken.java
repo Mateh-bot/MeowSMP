@@ -14,7 +14,6 @@ public class TigerToken extends AbstractToken {
 
     public TigerToken(Main main, SQLiteManager db) {
         super(main, db, "tiger_token", TokenType.PRIMARY, true, 60, Arrays.asList(
-                new PotionEffect(PotionEffectType.HEALTH_BOOST, 16 * 20, 2),
                 new PotionEffect(PotionEffectType.STRENGTH, 16 * 20, 1)
         ));
     }

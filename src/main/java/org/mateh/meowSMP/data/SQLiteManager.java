@@ -1,5 +1,6 @@
 package org.mateh.meowSMP.data;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,9 +12,14 @@ public class SQLiteManager {
 
     public SQLiteManager(String dbPath) {
         try {
+            File dbFile = new File(dbPath);
+            File parent = dbFile.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             createTable();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -28,7 +34,7 @@ public class SQLiteManager {
                 ");";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -41,7 +47,7 @@ public class SQLiteManager {
             stmt.setInt(3, level);
             stmt.setInt(4, kills);
             stmt.executeUpdate();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -58,7 +64,7 @@ public class SQLiteManager {
                     return new TokenData(level, kills);
                 }
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return new TokenData(1, 0);
@@ -66,10 +72,10 @@ public class SQLiteManager {
 
     public void close() {
         try {
-            if (connection != null && !connection.isClosed()) {
+            if(connection != null && !connection.isClosed()) {
                 connection.close();
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }

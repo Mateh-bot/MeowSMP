@@ -19,7 +19,7 @@ public class FallDamageListener implements Listener {
         if (!(event.getEntity() instanceof Player)) return;
         if (event.getCause() != EntityDamageEvent.DamageCause.FALL) return;
         Player player = (Player) event.getEntity();
-        if (hasTokenInHand(player, "jungle_cat")) {
+        if (hasTokenInHand(player, "jungle_cat") || hasTokenInHand(player, "house_cat")) {
             event.setCancelled(true);
         }
     }

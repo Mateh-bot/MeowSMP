@@ -22,8 +22,7 @@ public class HouseCatToken extends AbstractToken {
 
     @Override
     public void activateAbility(Player player) {
-        // Propels the player upward by half the previous impulse.
-        player.setVelocity(new Vector(0, 1, 0).multiply(15));
+        player.setVelocity(new Vector(0, 15, 0).multiply(1));
         player.sendMessage("House Cat activated: Propelling upward.");
     }
 

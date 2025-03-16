@@ -11,7 +11,7 @@ import org.mateh.meowSMP.TokenItems;
 public class RecipeManager {
 
     public static void registerRecipes(Main main) {
-        // Sphinx Token Recipe: Only a dragon egg is needed.
+        // Sphinx Token
         ItemStack sphinxToken = TokenItems.createSphinxTokenItem(main);
         NamespacedKey key = new NamespacedKey(main, "sphinx_token");
         ShapelessRecipe recipe = new ShapelessRecipe(key, sphinxToken);

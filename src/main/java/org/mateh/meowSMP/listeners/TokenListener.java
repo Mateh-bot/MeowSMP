@@ -1,6 +1,7 @@
 package org.mateh.meowSMP.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,6 +41,7 @@ public class TokenListener implements Listener {
             @Override
             public void run() {
                 for (Player player : main.getServer().getOnlinePlayers()) {
+                    checkAndApplyHealthBonus(player);
                     applyPassiveFromItem(player, player.getInventory().getItemInMainHand());
                     applyPassiveFromItem(player, player.getInventory().getItemInOffHand());
                 }
@@ -76,6 +78,32 @@ public class TokenListener implements Listener {
                 ));
             });
         }
+    }
+
+    private void checkAndApplyHealthBonus(Player player) {
+        double bonus = 0.0;
+        bonus = Math.max(bonus, getHealthBonusFromItem(player.getInventory().getItemInMainHand()));
+        bonus = Math.max(bonus, getHealthBonusFromItem(player.getInventory().getItemInOffHand()));
+        double newMaxHealth = 20.0 + bonus;
+        if (player.getAttribute(Attribute.MAX_HEALTH).getBaseValue() != newMaxHealth) {
+            player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(newMaxHealth);
+        }
+    }
+
+    private double getHealthBonusFromItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta())
+            return 0.0;
+        if (!item.getItemMeta().hasLore())
+            return 0.0;
+        List<String> lore = item.getItemMeta().getLore();
+        if (lore == null || lore.isEmpty())
+            return 0.0;
+        String tokenKey = lore.get(0);
+        if (tokenKey.equals("tiger_token"))
+            return 10.0;
+        if (tokenKey.equals("sphinx_token"))
+            return 20.0;
+        return 0.0;
     }
 
     @EventHandler
