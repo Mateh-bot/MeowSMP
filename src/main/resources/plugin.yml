@@ -1,0 +1,6 @@
+name: MeowSMP
+version: '1.0-SNAPSHOT'
+main: org.mateh.meowSMP.Main
+api-version: '1.21'
+commands:
+  token:
