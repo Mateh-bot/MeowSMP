@@ -6,41 +6,60 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.mateh.meowSMP.Main;
 import org.mateh.meowSMP.TokenItems;
+import org.mateh.meowSMP.abstracts.AbstractToken;
+import org.mateh.meowSMP.data.CooldownData;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class TokenSpawnListener implements Listener {
-
     private final Main main;
+    private final TokenListener tokenListener;
     private final Random random = new Random();
-    // Lista de tokens secundarios
     private final List<String> secondaryTokenKeys = Arrays.asList("catfish_token", "village_cat", "black_cat", "jungle_cat");
 
-    public TokenSpawnListener(Main main) {
+    public TokenSpawnListener(Main main, TokenListener tokenListener) {
         this.main = main;
+        this.tokenListener = tokenListener;
     }
 
-    // Cuando el jugador se une al servidor, si no tiene un token, se le da uno aleatorio.
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        var activeData = main.getSQLiteManager().loadActiveToken(player.getUniqueId().toString());
+        if (activeData != null) {
+            AbstractToken token = tokenListener.getTokenRegistry().get(activeData.getTokenKey());
+            if (token != null) {
+                tokenListener.setActiveToken(player, token);
+                long remaining = activeData.getCooldownEnd() - System.currentTimeMillis();
+                if (remaining > 0) {
+                    int remainingSeconds = (int) Math.ceil(remaining / 1000.0);
+                    var cd = token.createCooldownData(player, remainingSeconds);
+                    cd.getTask().runTaskTimer(main, 0L, 20L);
+                    tokenListener.setCooldown(player, activeData.getCooldownEnd());
+                    tokenListener.addCooldownTask(player, cd);
+                } else {
+                    tokenListener.resetCooldown(player);
+                }
+                player.sendMessage("Your active token (" + token.getDisplayName() + ") has been restored.");
+                return;
+            }
+        }
         if (!playerHasToken(player)) {
             giveRandomToken(player);
         }
     }
 
-    // Cuando el jugador respawnea, se le asigna nuevamente un token si no lo tiene.
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        // Se programa un retraso corto para que el inventario esté disponible
         main.getServer().getScheduler().runTaskLater(main, () -> {
             if (!playerHasToken(player)) {
                 giveRandomToken(player);
@@ -48,23 +67,30 @@ public class TokenSpawnListener implements Listener {
         }, 1L);
     }
 
-    // Al morir, se eliminan los tokens de los drops para que no se puedan recoger.
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         event.getDrops().removeIf(item -> isToken(item));
+        Player player = event.getEntity();
+        tokenListener.removeActiveToken(player);
     }
 
-    // Comprueba si el jugador ya tiene un token (en este ejemplo, se asume que son items PAPER con lore)
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (isToken(item)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot drop your token.");
+        }
+    }
+
     private boolean playerHasToken(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && isToken(item)) {
+            if (item != null && isToken(item))
                 return true;
-            }
         }
         return false;
     }
 
-    // Determina si el item es un token comprobando que sea PAPER y su lore coincida con uno de los token keys secundarios.
     private boolean isToken(ItemStack item) {
         if (item.getType() != Material.PAPER) return false;
         if (!item.hasItemMeta() || !item.getItemMeta().hasLore()) return false;
@@ -72,7 +98,6 @@ public class TokenSpawnListener implements Listener {
         return secondaryTokenKeys.contains(tokenKey);
     }
 
-    // Da al jugador un token aleatorio entre los tokens secundarios.
     private void giveRandomToken(Player player) {
         int index = random.nextInt(secondaryTokenKeys.size());
         String tokenKey = secondaryTokenKeys.get(index);
@@ -95,6 +120,6 @@ public class TokenSpawnListener implements Listener {
                 break;
         }
         player.getInventory().addItem(tokenItem);
-        player.sendMessage(ChatColor.GREEN + "Se te ha dado un token secundario: " + tokenKey);
+        player.sendMessage(ChatColor.GREEN + "You have received a secondary token: " + tokenKey);
     }
 }

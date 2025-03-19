@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.mateh.meowSMP.Main;
 import org.mateh.meowSMP.abstracts.AbstractToken;
 import org.mateh.meowSMP.data.SQLiteManager;
+import org.mateh.meowSMP.data.TokenData;
 import org.mateh.meowSMP.enums.TokenType;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class CatfishToken extends AbstractToken {
 
     @Override
     public void activateAbility(Player player) {
-        SQLiteManager.TokenData data = loadTokenData(player);
+        TokenData data = loadTokenData(player);
         int effectiveCooldown = cooldownSeconds;
         if (data != null) {
             int level = data.getLevel();

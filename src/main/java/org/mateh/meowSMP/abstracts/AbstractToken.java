@@ -10,13 +10,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mateh.meowSMP.Main;
+import org.mateh.meowSMP.data.CooldownData;
 import org.mateh.meowSMP.data.SQLiteManager;
+import org.mateh.meowSMP.data.TokenData;
 import org.mateh.meowSMP.enums.TokenType;
 
 import java.util.List;
 
 public abstract class AbstractToken {
-
     protected final Main main;
     protected final SQLiteManager db;
     protected final String key;
@@ -77,11 +78,32 @@ public abstract class AbstractToken {
         }.runTaskTimer(main, 0L, 20L);
     }
 
+    public CooldownData createCooldownData(Player player, int effectiveCooldown) {
+        BossBar bossBar = Bukkit.createBossBar(getDisplayName() + " Cooldown: " + effectiveCooldown + " seconds", BarColor.RED, BarStyle.SOLID);
+        bossBar.addPlayer(player);
+        BukkitRunnable task = new BukkitRunnable() {
+            int timeLeft = effectiveCooldown;
+            @Override
+            public void run() {
+                if (timeLeft <= 0) {
+                    bossBar.removeAll();
+                    cancel();
+                    return;
+                }
+                double progress = (double) timeLeft / effectiveCooldown;
+                bossBar.setProgress(progress);
+                bossBar.setTitle(getDisplayName() + " Cooldown: " + timeLeft + " seconds");
+                timeLeft--;
+            }
+        };
+        return new CooldownData(task, bossBar);
+    }
+
     public void showCooldownBossBar(Player player) {
         showCooldownBossBar(player, cooldownSeconds);
     }
 
-    public SQLiteManager.TokenData loadTokenData(Player player) {
+    public TokenData loadTokenData(Player player) {
         return db.loadTokenData(player.getUniqueId().toString(), key);
     }
 

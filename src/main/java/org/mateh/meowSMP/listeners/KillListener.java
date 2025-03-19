@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.mateh.meowSMP.Main;
-import org.mateh.meowSMP.PlayerTokenData;
+import org.mateh.meowSMP.data.PlayerTokenData;
 
 import java.util.HashMap;
 import java.util.Map;

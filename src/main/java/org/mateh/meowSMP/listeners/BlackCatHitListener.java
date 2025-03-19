@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Random;
 
 public class BlackCatHitListener implements Listener {
-
     private final Main main;
     private final Random random = new Random();
 

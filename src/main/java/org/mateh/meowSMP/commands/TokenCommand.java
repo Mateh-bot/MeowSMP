@@ -10,7 +10,6 @@ import org.mateh.meowSMP.Main;
 import org.mateh.meowSMP.TokenItems;
 
 public class TokenCommand implements CommandExecutor {
-
     private final Main main;
 
     public TokenCommand(Main main) {
@@ -19,17 +18,18 @@ public class TokenCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("meowsmp.token.admin")) {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            return true;
+        }
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
-
         if (args.length == 0) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /token <token>");
-            player.sendMessage(ChatColor.YELLOW + "Available tokens: lion, cheetah, tiger, house, catfish, village, black, jungle, sphinx");
+            player.sendMessage(ChatColor.YELLOW + "Usage: /token <token_name>");
             return true;
         }
-
         String token = args[0].toLowerCase();
         ItemStack tokenItem;
         switch (token) {

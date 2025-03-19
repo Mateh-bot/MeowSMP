@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BlackCatToken extends AbstractToken {
-
     public static Map<String, Boolean> activePlayers = new HashMap<>();
 
     public BlackCatToken(Main main, SQLiteManager db) {

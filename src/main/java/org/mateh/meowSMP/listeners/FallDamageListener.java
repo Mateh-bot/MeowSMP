@@ -7,7 +7,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.mateh.meowSMP.Main;
 
 public class FallDamageListener implements Listener {
-
     private final Main main;
 
     public FallDamageListener(Main main) {
