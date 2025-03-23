@@ -1,0 +1,8 @@
+name: MeowSMP
+version: '1.0-SNAPSHOT'
+main: org.holiday.meowSMP.Main
+api-version: '1.21'
+commands:
+  token:
+    description: Obtén un token especificado.
+    usage: /token <nombre_del_token>
